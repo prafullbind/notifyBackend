@@ -10,11 +10,12 @@ admin.initializeApp({
 });
 
 
+
 // Function to continuously monitor tasks and send notifications
 const monitorTasks = () => {
-    schedule.scheduleJob('*/1 * * * *', async () => { // Run every minute
+    schedule.scheduleJob('*/1 * * * * ', async () => { // Run every minute
         const currentTime = new Date();
-        const tasks = await task.find({ notificationTime: { $gte: currentTime, $lte: new Date(currentTime.getTime() + 5 * 60000) } });
+        const tasks = await task.find({ notificationTime: { $gte: currentTime, $lte: new Date(currentTime.getTime() + 5 * 60000)}});
         for (const task of tasks) {
             try {
                 await scheduleNotification(task.fcm, task.title, task.description, task.notificationTime);
@@ -35,9 +36,9 @@ const scheduleNotification = async (token, title, description, notificationTime)
 
     const currentTime = new Date();
     const fiveMinutesBefore = new Date(ISTNotificationTime.getTime() - 5 * 60000); // 5 minutes before
-    
+
     // Schedule notification only if notification time is in the future
-    if (currentTime.getTime() >= fiveMinutesBefore.getTime()) {
+    if ( fiveMinutesBefore.getTime() >= currentTime.getTime()) {
         const message = {
             token: token,
             notification: {
@@ -49,7 +50,7 @@ const scheduleNotification = async (token, title, description, notificationTime)
                 message: "This is testing purpose"
             }
         };
-        
+        console.log("Messaage", message);
         try {
             await admin.messaging().send(message);
             console.log('Notification sent successfully');
