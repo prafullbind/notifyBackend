@@ -30,8 +30,11 @@ const monitorTasks = () => {
 monitorTasks();
 
 const scheduleNotification = async (token, title, description, notificationTime) => {
+    // Convert notificationTime to IST if needed
+    const ISTNotificationTime = convertToIST(notificationTime);
+
     const currentTime = new Date();
-    const fiveMinutesBefore = new Date(notificationTime.getTime() - 5 * 60000); // 5 minutes before
+    const fiveMinutesBefore = new Date(ISTNotificationTime.getTime() - 5 * 60000); // 5 minutes before
     
     // Schedule notification only if notification time is in the future
     if (currentTime.getTime() >= fiveMinutesBefore.getTime()) {
@@ -56,6 +59,15 @@ const scheduleNotification = async (token, title, description, notificationTime)
         }
     }
 };
+
+// Function to convert datetime to Indian Standard Time (IST)
+const convertToIST = (dateTime) => {
+    const ISTOffset = 330 * 60 * 1000; // Offset for Indian Standard Time (IST) in milliseconds
+    const localTime = new Date(dateTime); // Parse datetime string into Date object
+    const ISTTime = new Date(localTime.getTime() + ISTOffset); // Adjust datetime by adding IST offset
+    return ISTTime;
+};
+
 
 
 const getTasks = async(req, res) => {
