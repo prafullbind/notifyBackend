@@ -22,6 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.use("/notify", require("../routes/task"))
+app.use("/notify", require("../routes/user"))
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

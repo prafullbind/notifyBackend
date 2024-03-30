@@ -1,12 +1,24 @@
 const task = require("../models/task");
+const users = require("../models/user");
 const schedule = require('node-schedule');
-
+const nodemailer = require('nodemailer');
 const admin =require("firebase-admin");
 
 const serviceAccount = require('../notifytask-ff85e-firebase-adminsdk-zf2u7-e45f8f88c0.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
+});
+
+// Create a transporter object using SMTP transport
+const transporter = nodemailer.createTransport({
+    host: 'smtp.hostinger.com', // Use your email service provider here
+    port: 465,
+    secure: true,
+    auth: {
+        user: 'deepika.rawal@nprservices.in', // Your email address
+        pass: 'Dell@123456!' // Your email password
+    }
 });
 
 
@@ -97,7 +109,29 @@ const addTask = async(req, res) => {
         const notificationTime = new Date(req.body.notificationTime);
     try {
         await newTask.save();
-        res.status(201).json(task);
+        //send immediate notification
+        scheduleNotification(req.body.fcm, req.body.title, req.body.description, notificationTime)
+        let user = await users.find({_id:req.body.createdBy})
+        console.log("user", user);
+        // Define email options
+        let emailId = user[0].email;
+    const mailOptions = {
+    from: 'deepika.rawal@nprservices.in', // Sender's email address
+    to: emailId, // Receiver's email address
+    subject: 'Test created', // Subject line
+    text: `Your task created successfully with title ${req.body.title}` // Plain text body
+};
+
+// Send email
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+        console.error('Error sending email:', error);
+    } else {
+        console.log('Email sent:', info.response);
+    }
+});
+
+        res.status(200).json("Task created successfuly");
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

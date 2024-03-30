@@ -8,7 +8,12 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    fcm: String
-}, {timestamps:true});
+    fcm: String,
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
+}, { timestamps: true });
 
-module.exports = new mongoose.model("task", taskSchema);
+module.exports = mongoose.model("Task", taskSchema);
