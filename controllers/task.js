@@ -137,33 +137,33 @@ const addTask = async(req, res) => {
     }
 }
 
-const editTask = async(req, res) => {
-    const { id } = req.params;
-    try {
-        const task = await task.findByIdAndUpdate(id, req.body, { new: true });
-        const message = {
-            token: task.fcm,
-            notification: {
-                title: task.title,
-                body: task.description
-            },
-            data: {
-                // Optional data to send along with the notification
-                message: "This is testing purpose"
-            }
-        };
+// const editTask = async(req, res) => {
+//     const { id } = req.params;
+//     try {
+//         const task = await task.findByIdAndUpdate(id, req.body, { new: true });
+//         const message = {
+//             token: task.fcm,
+//             notification: {
+//                 title: task.title,
+//                 body: task.description
+//             },
+//             data: {
+//                 // Optional data to send along with the notification
+//                 message: "This is testing purpose"
+//             }
+//         };
 
-        try {
-            await admin.messaging().send(message);
-            console.log('Notification sent successfully');
-            console.log("message", message);
-        } catch (error) {
-            console.error('Error sending notification:', error);
-        }
-        res.json(task);
-    } catch (err) {
-        res.status(404).json({ error: 'Task not found' });
-    }
-}
+//         try {
+//             await admin.messaging().send(message);
+//             console.log('Notification sent successfully');
+//             console.log("message", message);
+//         } catch (error) {
+//             console.error('Error sending notification:', error);
+//         }
+//         res.json(task);
+//     } catch (err) {
+//         res.status(404).json({ error: 'Task not found' });
+//     }
+// }
 
 module.exports = {getTasks, addTask, editTask, getTaskDetail};
